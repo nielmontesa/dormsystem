@@ -52,7 +52,8 @@
           // Authenticate a previously enrolled user
           faceio
             .authenticate({
-              locale: "auto", // Default user locale
+              locale: "auto",
+              enrollIntroTimeout: "5", // Default user locale
             })
             .then((userData) => {
               console.log("Success, user identified");

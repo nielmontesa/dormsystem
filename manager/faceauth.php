@@ -22,7 +22,7 @@ if (isset($_POST['start_over'])) {
     }
 
     // Delete the account record
-    $stmt = $con->prepare('DELETE FROM accounts WHERE id = ?');
+    $stmt = $con->prepare('DELETE FROM managers WHERE id = ?');
     $stmt->bind_param('i', $_SESSION['id']);
     $stmt->execute();
 

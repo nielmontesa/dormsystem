@@ -31,7 +31,7 @@ if (end($emailDomain) !== 'rtu.edu.ph') {
 }
 
 // We need to check if the account with that username exists.
-if ($stmt = $con->prepare('SELECT id, password FROM accounts WHERE username = ?')) {
+if ($stmt = $con->prepare('SELECT id, password FROM managers WHERE username = ?')) {
     // Bind parameters (s = string, i = int, b = blob, etc), hash the password using the PHP password_hash function.
     if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
         exit('Email is not valid!');
@@ -52,7 +52,7 @@ if ($stmt = $con->prepare('SELECT id, password FROM accounts WHERE username = ?'
         // Username doesn't exist, insert new account
         // Check email domain again before inserting
         if (end($emailDomain) === 'rtu.edu.ph') {
-            if ($stmt = $con->prepare('INSERT INTO accounts (username, password, email) VALUES (?, ?, ?)')) {
+            if ($stmt = $con->prepare('INSERT INTO managers (username, password, email) VALUES (?, ?, ?)')) {
                 // We do not want to expose passwords in our database, so hash the password and use password_verify when a user logs in.
                 $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
                 $stmt->bind_param('sss', $_POST['username'], $password, $_POST['email']);
@@ -67,7 +67,7 @@ if ($stmt = $con->prepare('SELECT id, password FROM accounts WHERE username = ?'
 
                 header('Location: faceauth.php'); // Redirect to faceauth.php after successful registration and login
             } else {
-                // Something is wrong with the SQL statement, so you must check to make sure your accounts table exists with all three fields.
+                // Something is wrong with the SQL statement, so you must check to make sure your managers table exists with all three fields.
                 echo 'Could not prepare statement!';
             }
         } else {
@@ -77,7 +77,7 @@ if ($stmt = $con->prepare('SELECT id, password FROM accounts WHERE username = ?'
 
     $stmt->close();
 } else {
-    // Something is wrong with the SQL statement, so you must check to make sure your accounts table exists with all 3 fields.
+    // Something is wrong with the SQL statement, so you must check to make sure your managers table exists with all 3 fields.
     echo 'Could not prepare statement!';
 }
 
