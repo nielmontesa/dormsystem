@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Login</title>
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" />
+  </head>
+  <body>
+    <div class="register">
+      <h1>Register</h1>
+      <form
+        id="registrationForm"
+        action="register.php"
+        method="post"
+        autocomplete="off">
+        <label for="regUsername">
+          <i class="fas fa-user"></i>
+        </label>
+        <input
+          type="text"
+          name="username"
+          placeholder="Full Name"
+          id="regUsername"
+          required />
+        <label for="regEmail">
+          <i class="fas fa-envelope"></i>
+        </label>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          id="regEmail"
+          required />
+        <label for="time">Number: </label>
+        <input
+          type="tel"
+          name="time"
+          placeholder="Contact Number"
+          id="regEmail"
+          required />
+        <label for="time">Check-in Time: </label>
+        <input type="time" name="contactnumber" id="regEmail" required />
+        <input type="submit" value="Register" />
+      </form>
+    </div>
+  </body>
+</html>
