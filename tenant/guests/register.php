@@ -48,7 +48,7 @@ if ($stmt = $con->prepare('SELECT id FROM guests WHERE guest_name = ?')) {
             $stmt->bind_param('ssss', $_POST['username'], $_POST['email'], $_POST['time'], $_POST['contactnumber']);
             $stmt->execute();
 
-            header('Location: faceauth.php');
+            header('Location: ../home.php');
         } else {
             // Something is wrong with the SQL statement, so you must check to make sure your guests table exists with all three fields.
             echo 'Could not prepare statement!';

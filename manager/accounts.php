@@ -27,28 +27,13 @@ $stmt->fetch();
 $stmt->close();
 
 // Function to add a new tenant
-function addTenant($con, $username, $password, $email, $school, $studentNumber) {
-    // Check if the student ID already exists
-    $stmtCheck = $con->prepare('SELECT id FROM tenants WHERE studentid = ?');
-    $stmtCheck->bind_param('s', $studentNumber);
-    $stmtCheck->execute();
-    $stmtCheck->store_result();
-
-    if ($stmtCheck->num_rows > 0) {
-        // Student ID already exists, handle the error (you can redirect or show an error message)
-        echo "Error: Student ID already exists!";
-    } else {
-        // Student ID does not exist, proceed to insert the new record
-        $stmtCheck->close();
-
-        $stmt = $con->prepare('INSERT INTO tenants (username, password, email, school, studentid) VALUES (?, ?, ?, ?, ?)');
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt->bind_param('sssss', $username, $hashedPassword, $email, $school, $studentNumber);
-        $stmt->execute();
-        $stmt->close();
-    }
+function addTenant($con, $username, $password, $email) {
+    $stmt = $con->prepare('INSERT INTO tenants (username, password, email) VALUES (?, ?, ?)');
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    $stmt->bind_param('sss', $username, $hashedPassword, $email);
+    $stmt->execute();
+    $stmt->close();
 }
-
 
 // Function to archive a tenant (soft delete)
 function archiveTenant($con, $tenantId) {
@@ -70,10 +55,10 @@ function searchTenants($con, $searchTerm) {
 }
 
 // Function to edit a tenant's information
-function editTenant($con, $tenantId, $newUsername, $newPassword, $newEmail) {
-    $stmt = $con->prepare('UPDATE tenants SET username = ?, password = ?, email = ? WHERE id = ?');
+function editTenant($con, $tenantId, $newUsername, $newPassword, $newEmail, $newRoomNum) {
+    $stmt = $con->prepare('UPDATE tenants SET username = ?, password = ?, email = ?, roomnum = ? WHERE id = ?');
     $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-    $stmt->bind_param('sssi', $newUsername, $hashedPassword, $newEmail, $tenantId);
+    $stmt->bind_param('ssssi', $newUsername, $hashedPassword, $newEmail, $newRoomNum, $tenantId);
     $stmt->execute();
     $stmt->close();
 }
@@ -83,9 +68,8 @@ if (isset($_POST['add'])) {
     $username = $_POST['new_username'];
     $password = $_POST['new_password'];
     $email = $_POST['new_email'];
-    $school = $_POST['new_school'];
-    $studentNumber = $_POST['new_student_number'];
-    addTenant($con, $username, $password, $email, $school, $studentNumber);
+    $studid = $_POST['new_studid'];
+    addTenant($con, $username, $password, $email, $studid);
 }
 
 // Check if the form for archiving a tenant is submitted
@@ -109,93 +93,115 @@ if (isset($_POST['edit'])) {
     $newUsername = $_POST['new_username'];
     $newPassword = $_POST['new_password'];
     $newEmail = $_POST['new_email'];
-    editTenant($con, $tenantIdToEdit, $newUsername, $newPassword, $newEmail);
+    $newRoomNum = $_POST['roomnum'];
+    editTenant($con, $tenantIdToEdit, $newUsername, $newPassword, $newEmail, $newRoomNum);
+    
+    // Redirect to the same page to see the updated data
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit();
 }
 
 ?>
 
 <!DOCTYPE html>
 <html>
-    <head>
-        <!-- ... (head section remains unchanged) -->
-    </head>
-    <body class="loggedin">
-        <!-- ... (navigation section remains unchanged) -->
+<head>
+		<meta charset="utf-8">
+		<title>Home Page</title>
+		<link href="style.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+	</head>
+<body class="loggedin">
+    		<nav class="navtop">
+			<div>
+				<h1>Website Title</h1>
+				<a href="dashboard.php"><i class="fas fa-user-circle"></i>Dashboard</a>
+				<a href="rooms.php"><i class="fas fa-user-circle"></i>Rooms</a>
+				<a href="students.php"><i class="fas fa-user-circle"></i>Students</a>
+				<a href="accounts.php"><i class="fas fa-user-circle"></i>Accounts</a>
+				<a href="#"><i class="fas fa-sign-out-alt"></i>Logout</a>
+			</div>
+		</nav>
 
-        <div class="content">
-            <h2>Current Students</h2>
-            <!-- ... (profile details section remains unchanged) -->
+    <div class="content">
+        <h2>Current Students</h2>
 
-            <h2>All Tenants</h2>
-            <div>
-                <!-- Add Tenant Form -->
-    <form method="post">
-        <label for="new_username">Username:</label>
-        <input type="text" name="new_username" required>
-        <label for="new_password">Password:</label>
-        <input type="password" name="new_password" required>
-        <label for="new_email">Email:</label>
-        <input type="email" name="new_email" required>
-        <label for="new_school">School:</label>
-        <input type="text" name="new_school" required>
-        <label for="new_student_number">Student Number:</label>
-        <input type="text" name="new_student_number" required>
-        <button type="submit" name="add">Add Tenant</button>
-    </form>
+        <div>
+        <div>
+            <!-- Add Tenant Form -->
+            <form method="post">
+                <label for="new_username">Username:</label>
+                <input type="text" name="new_username" required>
+                <label for="new_password">Password:</label>
+                <input type="password" name="new_password" required>
+                <label for="new_email">Email:</label>
+                <input type="email" name="new_email" required>
+                <label for="new_school">School:</label>
+                <input type="text" name="new_school" required>
+                <label for="new_student_number">Student Number:</label>
+                <input type="text" name="new_student_number" required>
+                <button type="submit" name="add">Add Tenant</button>
+            </form>
+
+            <!-- Archive Tenant Form -->
+            <form method="post">
+                <label for="archive_id">Tenant ID to Archive:</label>
+                <input type="number" name="archive_id" required>
+                <button type="submit" name="archive">Archive Tenant</button>
+            </form>
+
+            <!-- Search Tenants Form -->
+            <form method="post">
+                <label for="search_term">Search Tenants:</label>
+                <input type="text" name="search_term" required>
+                <button type="submit" name="search">Search</button>
+            </form>
 
 
-                <!-- Archive Tenant Form -->
-                <form method="post">
-                    <label for="archive_id">Tenant ID to Archive:</label>
-                    <input type="number" name="archive_id" required>
-                    <button type="submit" name="archive">Archive Tenant</button>
-                </form>
-
-                <!-- Search Tenants Form -->
-                <form method="post">
-                    <label for="search_term">Search Tenants:</label>
-                    <input type="text" name="search_term" required>
-                    <button type="submit" name="search">Search</button>
-                </form>
-
-                <!-- Display the 'tenants' table -->
-                <table border="1">
-                    <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Password</th>
-                        <th>Email</th>
-                        <th>Student ID</th>
-                        <th>School</th>
-                        <th>Action</th>
-                    </tr>
-                    <?php
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        echo "<tr>";
-                        echo "<td>{$row['id']}</td>";
-                        echo "<td>{$row['username']}</td>";
-                        echo "<td>{$row['password']}</td>";
-                        echo "<td>{$row['email']}</td>";
-                        echo "<td>{$row['studentid']}</td>";
-                        echo "<td>{$row['school']}</td>";
-                        // Add more columns as needed
-                        echo "<td>";
-                        echo "<form method='post'>";
-                        echo "<input type='hidden' name='edit_id' value='{$row['id']}'>";
-                        echo "<label for='new_username'>New Username:</label>";
-                        echo "<input type='text' name='new_username' required>";
-                        echo "<label for='new_password'>New Password:</label>";
-                        echo "<input type='password' name='new_password' required>";
-                        echo "<label for='new_email'>New Email:</label>";
-                        echo "<input type='email' name='new_email' required>";
-                        echo "<button type='submit' name='edit'>Edit</button>";
-                        echo "</form>";
-                        echo "</td>";
-                        echo "</tr>";
+            <!-- Display the 'tenants' table -->
+            <table border="1">
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Email</th>
+                    <th>Room Number</th>
+                    <th>Action</th>
+                </tr>
+                <?php
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "<tr>";
+                    echo "<td>{$row['id']}</td>";
+                    echo "<td>{$row['username']}</td>";
+                    echo "<td>{$row['password']}</td>";
+                    echo "<td>{$row['email']}</td>";
+                    echo "<td>{$row['roomnum']}</td>"; // New column to display 'roomnum'
+                    echo "<td>";
+                    echo "<form method='post'>";
+                    echo "<input type='hidden' name='edit_id' value='{$row['id']}'>";
+                    echo "<label for='new_username'>New Username:</label>";
+                    echo "<input type='text' name='new_username' required>";
+                    echo "<label for='new_password'>New Password:</label>";
+                    echo "<input type='password' name='new_password' required>";
+                    echo "<label for='new_email'>New Email:</label>";
+                    echo "<input type='email' name='new_email' required>";
+                    echo "<label for='roomnum'>Room Number:</label>";
+                    echo "<select name='roomnum'>";
+                    // Dropdown options
+                    for ($i = 1; $i <= 5; $i++) {
+                        for ($j = 1; $j <= 5; $j++) {
+                            echo "<option value='{$i}-{$j}'>{$i}-{$j}</option>";
+                        }
                     }
-                    ?>
-                </table>
-            </div>
+                    echo "</select>";
+                    echo "<button type='submit' name='edit'>Edit</button>";
+                    echo "</form>";
+                    echo "</td>";
+                    echo "</tr>";
+                }
+                ?>
+            </table>
         </div>
-    </body>
+    </div>
+</body>
 </html>

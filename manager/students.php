@@ -50,25 +50,6 @@ $stmt->close();
 		<div class="content">
 			<h2>Current Students</h2>
 			<div>
-				<p>Your account details are below:</p>
-				<table>
-					<tr>
-						<td>Username:</td>
-						<td><?=$_SESSION['name']?></td>
-					</tr>
-					<tr>
-						<td>Password:</td>
-						<td><?=$password?></td>
-					</tr>
-					<tr>
-						<td>Email:</td>
-						<td><?=$email?></td>
-					</tr>
-				</table>
-			</div>
-
-			<h2>All Tenants</h2>
-			<div>
 				<!-- Display the 'tenants' table -->
 				<table border="1">
 					<tr>

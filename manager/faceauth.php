@@ -62,12 +62,13 @@ if (isset($_POST['start_over'])) {
            // Start the facial enrollment process
            faceio.enroll({
                 "locale": "auto", // Default user locale
+                enrollIntroTimeout: "4",
             }).then(userInfo => {
                 // User Successfully Enrolled!
                 alert(
                     `Success! You will now be redirected.`
                 );
-                window.location.href = "home.php";
+                window.location.href = "dashboard.php";
                 console.log(userInfo);
                 // handle success, save the facial ID, redirect to dashboard...
             }).catch(errCode => {
