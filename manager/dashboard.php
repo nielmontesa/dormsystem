@@ -47,34 +47,118 @@ $totalGuests = $totalGuestsResult['totalGuests'];
 
 
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Home Page</title>
-		<link href="style.css" rel="stylesheet" type="text/css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer">
-	</head>
-	<body class="loggedin">
-		<nav class="navtop">
+
+<head>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<meta charset="utf-8">
+	<title>Home Page</title>
+	<link href="style.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+		integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
+
+<body class="loggedin p-12 flex gap-12">
+	<nav class="navtop bg-gray-900 text-white p-12 rounded-lg ">
+		<div class="flex flex-col gap-5 justify-between	h-full">
 			<div>
-				<h1>Website Title</h1>
-				<a href="dashboard.php"><i class="fas fa-user-circle"></i>Dashboard</a>
-				<a href="rooms.php"><i class="fas fa-user-circle"></i>Rooms</a>
-				<a href="students.php"><i class="fas fa-user-circle"></i>Students</a>
-				<a href="accounts.php"><i class="fas fa-user-circle"></i>Accounts</a>
-				<a href="#"><i class="fas fa-sign-out-alt"></i>Logout</a>
+				<p class="capitalize">
+					<?= $_SESSION['name'] ?>
+				</p>
+				<p class="text-sm text-gray-300">Dorm Manager</p>
 			</div>
-		</nav>
-		<div class="content">
-			<h2>Home Page</h2>
-			<p>Welcome back, <?=$_SESSION['name']?>!</p>
+			<div class="h-full mt-12">
+				<ul class="flex flex-col gap-5">
+					<li><a href="dashboard.php"
+							class="text-gray-100 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-table-columns"></i>Dashboard</a></li>
+					<li><a href="rooms.php"
+							class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-door-closed"></i>Rooms</a></li>
+					<li><a href="students.php"
+							class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-people-roof"></i>Students</a></li>
+				</ul>
+			</div>
+			<div class="flex flex-col gap-2">
+				<ul>
+					<li><a href="accounts.php"
+							class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-money-bill"></i></i>Accounts</a></li>
+					<li><a href="logout.php"
+							class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-right-from-bracket"></i></i>Logout</a></li>
+				</ul>
+
+
+
+			</div>
 		</div>
+	</nav>
+	<div class="content  w-full h-full flex flex-col">
+		<h2 class="text-5xl">Welcome to your dashboard!</h2>
+		<p class="font-medium mt-3">This gives you an overview for the entire dormitory!</p>
+
 
 		<!-- Display the total number of rooms -->
-		<div class="totalrooms">Total Rooms <label for=""><?=$totalRooms?></label></div>
-		<div class="regstudents">Registered Students<label for=""> <?=$totalStudents?></label></div>
-		<div class="studunpaid">Student Unpaid <label for=""><?=$totalUnpaidStudents?></label></div>
-		<div class="settacc">Settled Accounts <label for=""><?=$totalSettledAccounts?></label></div>
-		<div class="guests">Guests <label for=""><?=$totalGuests?></label></div>
+		<div class="dash grid grid-cols-3 gap-5 mt-4 h-full">
+			<div
+				class="totalrooms rounded-lg p-8 bg-gray-200 flex flex-col justify-between font-medium text-gray-400 hover:text-gray-700">
+				<i class="fa-solid fa-door-open fa-2xl mt-2"></i>
+				<div class="flex justify-between w-full text-xl">
+					<h1 class="text-xl">Total Rooms</h1>
+					<p class="text-xl" for="">
+						<?= $totalRooms ?>
+					</p>
+				</div>
+			</div>
 
-	</body>
+			<div
+				class="regstudents rounded-lg p-8 bg-gray-200 flex flex-col justify-between font-medium text-gray-400 hover:text-gray-700">
+				<i class="fa-solid fa-person fa-2xl mt-2"></i>
+				<div class="flex justify-between w-full text-xl">
+					<h1 class="text-xl">Registered Students</h1>
+					<p class="text-xl" for="">
+						<?= $totalStudents ?>
+					</p>
+				</div>
+			</div>
+
+			<div
+				class="studunpaid rounded-lg p-8 bg-gray-200 flex flex-col justify-between font-medium text-gray-400 hover:text-gray-700">
+				<i class="fa-solid fa-person-circle-exclamation fa-2xl mt-2"></i>
+				<div class="flex justify-between w-full text-xl">
+					<h1 class="text-xl">Student Unpaid</h1>
+					<p class="text-xl" for="">
+						<?= $totalUnpaidStudents ?>
+					</p>
+				</div>
+			</div>
+
+			<div
+				class="settacc rounded-lg p-8 bg-gray-200 flex flex-col justify-between font-medium text-gray-400 hover:text-gray-700">
+				<i class="fa-solid fa-person-circle-check fa-2xl mt-2"></i>
+				<div class="flex justify-between w-full text-xl">
+					<h1 class="text-xl">Settled Accounts</h1>
+					<p class="text-xl" for="">
+						<?= $totalSettledAccounts ?>
+					</p>
+				</div>
+			</div>
+
+			<div
+				class="guests rounded-lg p-8 bg-gray-200 flex flex-col justify-between font-medium text-gray-400 hover:text-gray-700">
+				<i class="fa-solid fa-people-pulling fa-2xl mt-2"></i>
+				<div class="flex justify-between w-full text-xl">
+					<h1 class="text-xl">Guests</h1>
+					<p class="text-xl" for="">
+						<?= $totalGuests ?>
+					</p>
+				</div>
+			</div>
+
+
+		</div>
+	</div </body>
+
 </html>

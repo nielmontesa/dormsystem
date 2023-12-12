@@ -27,51 +27,81 @@ $stmt->fetch();
 $stmt->close();
 ?>
 
-<!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Profile Page</title>
-		<link href="style.css" rel="stylesheet" type="text/css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer">
-	</head>
-	<body class="loggedin">
-		<nav class="navtop">
+
+<head>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<meta charset="utf-8">
+	<title>Home Page</title>
+	<link href="style.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+		integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
+
+<body class="loggedin p-12 flex gap-12">
+	<nav class="navtop bg-gray-900 text-white p-12 rounded-lg ">
+		<div class="flex flex-col gap-5 justify-between	h-full">
 			<div>
-				<h1>Website Title</h1>
-				<a href="dashboard.php"><i class="fas fa-user-circle"></i>Dashboard</a>
-				<a href="rooms.php"><i class="fas fa-user-circle"></i>Rooms</a>
-				<a href="students.php"><i class="fas fa-user-circle"></i>Students</a>
-				<a href="accounts.php"><i class="fas fa-user-circle"></i>Accounts</a>
-				<a href="#"><i class="fas fa-sign-out-alt"></i>Logout</a>
+				<p class="capitalize">
+					<?= $_SESSION['name'] ?>
+				</p>
+				<p class="text-sm text-gray-300">Dorm Manager</p>
 			</div>
-		</nav>
-		</nav>
-		<div class="content">
-			<h2>Current Students</h2>
-			<div>
-				<!-- Display the 'tenants' table -->
-				<table border="1">
-					<tr>
-						<th>ID</th>
-						<th>Username</th>
-						<th>Password</th>
-						<th>Email</th>
-						<!-- Add more columns as needed -->
-					</tr>
-					<?php
-					while ($row = mysqli_fetch_assoc($result)) {
-						echo "<tr>";
-						echo "<td>{$row['id']}</td>";
-						echo "<td>{$row['username']}</td>";
-						echo "<td>{$row['password']}</td>";
-						echo "<td>{$row['email']}</td>";
-						// Add more columns as needed
-						echo "</tr>";
-					}
-					?>
-				</table>
+			<div class="h-full mt-12">
+				<ul class="flex flex-col gap-5">
+					<li><a href="dashboard.php"
+							class="text-gray-100 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-table-columns"></i>Dashboard</a></li>
+					<li><a href="rooms.php"
+							class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-door-closed"></i>Rooms</a></li>
+					<li><a href="students.php"
+							class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-people-roof"></i>Students</a></li>
+				</ul>
+			</div>
+			<div class="flex flex-col gap-2">
+				<ul>
+					<li><a href="accounts.php"
+							class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-money-bill"></i></i>Accounts</a></li>
+					<li><a href="logout.php"
+							class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-right-from-bracket"></i></i>Logout</a></li>
+				</ul>
+
+
+
 			</div>
 		</div>
-	</body>
+	</nav>
+	<div class="content w-full">
+		<div class="h-full overflow-y-auto max-h-[100vh]">
+			<table class="bg-gray-200 w-full h-full text-center border-collapse ">
+				<tr>
+					<th class="bg-gray-700 text-white p-2 px-4 border border-gray-600">ID</th>
+					<th class="bg-gray-700 text-white p-2 px-4 border border-gray-600">Username</th>
+					<th class="bg-gray-700 text-white p-2 px-4 border border-gray-600">Password</th>
+					<th class="bg-gray-700 text-white p-2 px-4 border border-gray-600">Email</th>
+					<!-- Add more columns as needed -->
+				</tr>
+				<?php
+				while ($row = mysqli_fetch_assoc($result)) {
+					echo "<tr>";
+					echo "<td class='border border-gray-300 rounded-bl-lg'>{$row['id']}</td>";
+					echo "<td class='border border-gray-300'>{$row['username']}</td>";
+					echo "<td class='border border-gray-300'>{$row['password']}</td>";
+					echo "<td class='border border-gray-300 rounded-br-lg'>{$row['email']}</td>";
+					// Add more columns as needed
+					echo "</tr>";
+				}
+				?>
+			</table>
+
+
+		</div>
+	</div>
+</body>
+
 </html>

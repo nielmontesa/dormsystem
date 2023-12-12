@@ -2,37 +2,51 @@
   <head>
     <meta charset="utf-8" />
     <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <link
       rel="stylesheet"
       href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" />
   </head>
-  <body>
-    <div class="login">
-      <h1>Login</h1>
-      <form id="authForm" action="authenticate.php" method="post">
-        <label for="username">
-          <i class="fas fa-user"></i>
-        </label>
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          id="username"
-          required />
-        <label for="password">
-          <i class="fas fa-lock"></i>
-        </label>
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          id="password"
-          required />
-        <input type="submit" value="Login" />
-      </form>
+  <body class="bg-blue-100 flex items-center justify-center p-24">
+    <div
+      class="bg-gray-100 p-6 w-full h-full rounded-lg flex items-center justify-center flex-col text-center shadow-lg">
+      <small class="text-base font-medium tracking-widest text-gray-400"
+        >RIZAL TECHNOLOGICAL UNIVERSITY</small
+      >
+      <h1 class="text-8xl font-bold tracking-tight w-1/2 leading-[5rem]">
+        Dormitory Management System
+      </h1>
+      <p class="mt-12">Please enter your credentials:</p>
+      <div class="flex gap-2 mt-6">
+        <div class="login">
+          <form
+            id="authForm"
+            action="authenticate.php"
+            method="post"
+            class="flex flex-col gap-2">
+            <input
+              class="px-6 py-2 bg-white rounded-full border-gray-300 border-[1px]"
+              type="text"
+              name="username"
+              placeholder="Username"
+              id="username"
+              required />
+            <input
+              class="px-6 py-2 bg-white bg-gray-100 rounded-full border-gray-300 border-[1px]"
+              type="password"
+              name="password"
+              placeholder="Password"
+              id="password"
+              required />
+            <input
+              class="px-6 py-2 bg-blue-700 rounded-full text-gray-100 hover:bg-blue-900"
+              type="submit"
+              value="Login" />
+          </form>
+        </div>
+      </div>
     </div>
-
-    <a href="register.html">Register</a>
 
     <script src="https://cdn.faceio.net/fio.js"></script>
     <script type="text/javascript">
@@ -42,7 +56,7 @@
           // Cache the form element
           var form = event.currentTarget;
 
-          const faceio = new faceIO("fioaf152");
+          const faceio = new faceIO("fioa2fe5");
 
           // Prevent the default form submission
           event.preventDefault();
@@ -52,8 +66,8 @@
           // Authenticate a previously enrolled user
           faceio
             .authenticate({
-              locale: "auto", // Default user locale
-              enrollIntroTimeout: "5",
+              locale: "auto",
+              enrollIntroTimeout: "5", // Default user locale
             })
             .then((userData) => {
               console.log("Success, user identified");

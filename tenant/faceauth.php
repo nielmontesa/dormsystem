@@ -22,7 +22,7 @@ if (isset($_POST['start_over'])) {
     }
 
     // Delete the account record
-    $stmt = $con->prepare('DELETE FROM accounts WHERE id = ?');
+    $stmt = $con->prepare('DELETE FROM tenants WHERE id = ?');
     $stmt->bind_param('i', $_SESSION['id']);
     $stmt->execute();
 
@@ -35,32 +35,46 @@ if (isset($_POST['start_over'])) {
 // Check if the 'run face auth' button is clicked
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Face Authentication</title>
+    <meta charset="utf-8" />
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
 
-<h1>Welcome, <?php echo $_SESSION['name']; ?>!</h1>
+<body class="bg-blue-100 flex items-center justify-center p-24">
+    <div
+        class="bg-gray-100 p-6 w-full h-full rounded-lg flex items-center justify-center flex-col text-center shadow-lg">
+        <small class="text-base font-medium tracking-widest text-gray-400">RIZAL TECHNOLOGICAL UNIVERSITY</small>
+        <h1 class="text-8xl font-bold tracking-tight w-1/2 leading-[5rem]">
+            Dormitory Management System
+        </h1>
+        <p class="mt-12">Welcome,
+            <?php echo $_SESSION['name']; ?>!
+            <?php if (isset($message)): ?>
+            <p>
+                <?php echo $message; ?>
+            </p>
+        <?php endif; ?>
+        </p>
+        <div class="flex gap-2 mt-6">
+            <button name="run_face_auth" onclick="enrollNewUser()"
+                class="px-6 py-2 bg-blue-700 rounded-full text-gray-100 hover:bg-blue-900">Run Face Auth</button>
+            <form action="faceauth.php" method="post"
+                class="px-6 py-2 bg-blue-700 rounded-full text-gray-100 hover:bg-blue-900 m-0">
+                <button type="submit" name="start_over">Start Over</button>
+            </form>
+        </div>
+    </div>
 
-<?php if (isset($message)) : ?>
-    <p><?php echo $message; ?></p>
-<?php endif; ?>
-    <button name="run_face_auth" onclick="enrollNewUser()">Run Face Auth</button>
-<form action="faceauth.php" method="post">
-    <button type="submit" name="start_over">Start Over</button>
-</form>
-
- <script src="https://cdn.faceio.net/fio.js"></script>
+    <script src="https://cdn.faceio.net/fio.js"></script>
     <script type="text/javascript">
         // Instantiate fio.js with your application Public ID
-        const faceio = new faceIO("fioaf152");
-        function enrollNewUser(){
-           // Start the facial enrollment process
-           faceio.enroll({
+        const faceio = new faceIO("fioa2fe5");
+        function enrollNewUser() {
+            // Start the facial enrollment process
+            faceio.enroll({
                 "locale": "auto", // Default user locale
                 enrollIntroTimeout: "4",
             }).then(userInfo => {
@@ -82,4 +96,5 @@ if (isset($_POST['start_over'])) {
         }
     </script>
 </body>
+
 </html>

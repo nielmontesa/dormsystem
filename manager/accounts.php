@@ -3,8 +3,8 @@
 session_start();
 // If the user is not logged in redirect to the login page...
 if (!isset($_SESSION['loggedin'])) {
-	header('Location: index.html');
-	exit;
+    header('Location: index.html');
+    exit;
 }
 $DATABASE_HOST = 'localhost';
 $DATABASE_USER = 'root';
@@ -12,7 +12,7 @@ $DATABASE_PASS = '';
 $DATABASE_NAME = 'phplogin';
 $con = mysqli_connect($DATABASE_HOST, $DATABASE_USER, $DATABASE_PASS, $DATABASE_NAME);
 if (mysqli_connect_errno()) {
-	exit('Failed to connect to MySQL: ' . mysqli_connect_error());
+    exit('Failed to connect to MySQL: ' . mysqli_connect_error());
 }
 // Fetch all rows from the 'tenants' table
 $result = mysqli_query($con, 'SELECT * FROM tenants');
@@ -27,7 +27,8 @@ $stmt->fetch();
 $stmt->close();
 
 // Function to add a new tenant
-function addTenant($con, $username, $password, $email) {
+function addTenant($con, $username, $password, $email)
+{
     $stmt = $con->prepare('INSERT INTO tenants (username, password, email) VALUES (?, ?, ?)');
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $stmt->bind_param('sss', $username, $hashedPassword, $email);
@@ -36,7 +37,8 @@ function addTenant($con, $username, $password, $email) {
 }
 
 // Function to archive a tenant (soft delete)
-function archiveTenant($con, $tenantId) {
+function archiveTenant($con, $tenantId)
+{
     $stmt = $con->prepare('UPDATE tenants SET archived = 1 WHERE id = ?');
     $stmt->bind_param('i', $tenantId);
     $stmt->execute();
@@ -44,7 +46,8 @@ function archiveTenant($con, $tenantId) {
 }
 
 // Function to search for tenants by username
-function searchTenants($con, $searchTerm) {
+function searchTenants($con, $searchTerm)
+{
     $stmt = $con->prepare('SELECT * FROM tenants WHERE username LIKE ?');
     $searchTerm = '%' . $searchTerm . '%';
     $stmt->bind_param('s', $searchTerm);
@@ -55,11 +58,57 @@ function searchTenants($con, $searchTerm) {
 }
 
 // Function to edit a tenant's information
-function editTenant($con, $tenantId, $newUsername, $newPassword, $newEmail, $newRoomNum) {
-    $stmt = $con->prepare('UPDATE tenants SET username = ?, password = ?, email = ?, roomnum = ? WHERE id = ?');
-    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-    $stmt->bind_param('ssssi', $newUsername, $hashedPassword, $newEmail, $newRoomNum, $tenantId);
+function editTenant($con, $tenantId, $newUsername, $newPassword, $newEmail, $newRoomNum)
+{
+    // Start building the query
+    $query = 'UPDATE tenants SET';
+
+    // Initialize an array to store the parameters and types for binding
+    $params = [];
+    $types = '';
+
+    // Check if each field is provided and add it to the query
+    if (!empty($newUsername)) {
+        $query .= ' username = ?,';
+        $params[] = $newUsername;
+        $types .= 's';
+    }
+
+    if (!empty($newPassword)) {
+        $query .= ' password = ?,';
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        $params[] = $hashedPassword;
+        $types .= 's';
+    }
+
+    if (!empty($newEmail)) {
+        $query .= ' email = ?,';
+        $params[] = $newEmail;
+        $types .= 's';
+    }
+
+    if (!empty($newRoomNum)) {
+        $query .= ' roomnum = ?,';
+        $params[] = $newRoomNum;
+        $types .= 's';
+    }
+
+    // Remove the trailing comma
+    $query = rtrim($query, ',');
+
+    // Add the WHERE clause
+    $query .= ' WHERE id = ?';
+    $params[] = $tenantId;
+    $types .= 'i';
+
+    // Prepare and bind the parameters
+    $stmt = $con->prepare($query);
+    $stmt->bind_param($types, ...$params);
+
+    // Execute the query
     $stmt->execute();
+
+    // Close the statement
     $stmt->close();
 }
 
@@ -95,96 +144,126 @@ if (isset($_POST['edit'])) {
     $newEmail = $_POST['new_email'];
     $newRoomNum = $_POST['roomnum'];
     editTenant($con, $tenantIdToEdit, $newUsername, $newPassword, $newEmail, $newRoomNum);
-    
+
     // Redirect to the same page to see the updated data
-    header("Location: ".$_SERVER['PHP_SELF']);
+    header("Location: " . $_SERVER['PHP_SELF']);
     exit();
 }
 
 ?>
-
-<!DOCTYPE html>
 <html>
+
 <head>
-		<meta charset="utf-8">
-		<title>Home Page</title>
-		<link href="style.css" rel="stylesheet" type="text/css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer">
-	</head>
-<body class="loggedin">
-    		<nav class="navtop">
-			<div>
-				<h1>Website Title</h1>
-				<a href="dashboard.php"><i class="fas fa-user-circle"></i>Dashboard</a>
-				<a href="rooms.php"><i class="fas fa-user-circle"></i>Rooms</a>
-				<a href="students.php"><i class="fas fa-user-circle"></i>Students</a>
-				<a href="accounts.php"><i class="fas fa-user-circle"></i>Accounts</a>
-				<a href="#"><i class="fas fa-sign-out-alt"></i>Logout</a>
-			</div>
-		</nav>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="utf-8">
+    <title>Home Page</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
 
-    <div class="content">
-        <h2>Current Students</h2>
+<body class="loggedin p-12 flex gap-12">
+    <nav class="navtop bg-gray-900 text-white p-12 rounded-lg ">
+        <div class="flex flex-col gap-5 justify-between	h-full">
+            <div>
+                <p class="capitalize">
+                    <?= $_SESSION['name'] ?>
+                </p>
+                <p class="text-sm text-gray-300">Dorm Manager</p>
+            </div>
+            <div class="h-full mt-12">
+                <ul class="flex flex-col gap-5">
+                    <li><a href="dashboard.php"
+                            class="text-gray-100 hover:text-blue-200 flex items-center justify-start gap-2"><i
+                                class="fa-solid fa-table-columns"></i>Dashboard</a></li>
+                    <li><a href="rooms.php"
+                            class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+                                class="fa-solid fa-door-closed"></i>Rooms</a></li>
+                    <li><a href="students.php"
+                            class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+                                class="fa-solid fa-people-roof"></i>Students</a></li>
+                </ul>
+            </div>
+            <div class="flex flex-col gap-2">
+                <ul>
+                    <li><a href="accounts.php"
+                            class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+                                class="fa-solid fa-money-bill"></i></i>Accounts</a></li>
+                    <li><a href="logout.php"
+                            class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+                                class="fa-solid fa-right-from-bracket"></i></i>Logout</a></li>
+                </ul>
 
-        <div>
-        <div>
-            <!-- Add Tenant Form -->
-            <form method="post">
-                <label for="new_username">Username:</label>
-                <input type="text" name="new_username" required>
-                <label for="new_password">Password:</label>
-                <input type="password" name="new_password" required>
-                <label for="new_email">Email:</label>
-                <input type="email" name="new_email" required>
-                <label for="new_school">School:</label>
-                <input type="text" name="new_school" required>
-                <label for="new_student_number">Student Number:</label>
-                <input type="text" name="new_student_number" required>
-                <button type="submit" name="add">Add Tenant</button>
+
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="content w-full h-full flex flex-col gap-2 text-xs">
+        <div class="flex gap-2">
+            <form method="post" class="rounded-lg bg-gray-200 p-4 text-xs flex flex-col gap-1 w-full">
+                <h1 class="font-medium text-base">Add Tenant</h1>
+                <label for="new_username" class="mt-1">Username: </label>
+                <input type="text" name="new_username" class="rounded-lg" required>
+                <label for="new_password" class="mt-1">Password: </label>
+                <input type="password" name="new_password" class="rounded-lg" required>
+                <label for="new_email" class="mt-1">Email: </label>
+                <input type="email" name="new_email" class="rounded-lg" required>
+                <label for="new_school" class="mt-1">School: </label>
+                <input type="text" name="new_school" class="rounded-lg" required>
+                <label for="new_student_number" class="mt-1">Student Number: </label>
+                <input type="text" name="new_student_number" class="rounded-lg" required>
+                <button type="submit" name="add"
+                    class="bg-blue-700 rounded-full text-gray-100 hover:bg-blue-900 mt-4 py-2">Add
+                    Tenant</button>
             </form>
-
-            <!-- Archive Tenant Form -->
-            <form method="post">
-                <label for="archive_id">Tenant ID to Archive:</label>
-                <input type="number" name="archive_id" required>
-                <button type="submit" name="archive">Archive Tenant</button>
-            </form>
-
-            <!-- Search Tenants Form -->
-            <form method="post">
-                <label for="search_term">Search Tenants:</label>
-                <input type="text" name="search_term" required>
-                <button type="submit" name="search">Search</button>
-            </form>
-
-
-            <!-- Display the 'tenants' table -->
-            <table border="1">
+            <div class="flex flex-col">
+                <form method="post" class="rounded-lg bg-gray-200 p-6 flex flex-col gap-2 h-full">
+                    <h1 class="font-medium text-base">Archive Tenant</h1>
+                    <label for="archive_id">Tenant ID to Archive:</label>
+                    <input type="number" name="archive_id" required class="rounded-lg">
+                    <button type="submit" name="archive"
+                        class="bg-blue-700 rounded-full text-gray-100 hover:bg-blue-900 px-2 py-1">Archive
+                        Tenant</button>
+                </form>
+                <form method="post" class="rounded-lg bg-gray-200 p-6 flex flex-col gap-2 h-full">
+                    <h1 class="font-medium text-base">Search Tenant</h1>
+                    <label for="search_term">Search Tenants:</label>
+                    <input type="text" name="search_term" required class="rounded-lg">
+                    <button type="submit" name="search"
+                        class="bg-blue-700 rounded-full text-gray-100 hover:bg-blue-900 px-2 py-1">Search</button>
+                </form>
+            </div>
+        </div>
+        <div class="h-full overflow-y-auto over-flow-x-auto max-h-[100%] w-full rounded-lg ">
+            <table class="bg-gray-200 w-full h-full text-center border-collapse">
                 <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Password</th>
-                    <th>Email</th>
-                    <th>Room Number</th>
-                    <th>Action</th>
+                    <th class="bg-gray-700 text-white p-2 px-4 border border-gray-600">ID</th>
+                    <th class="bg-gray-700 text-white p-2 px-4 border border-gray-600">Username</th>
+                    <th class="bg-gray-700 text-white p-2 px-4 border border-gray-600">Password</th>
+                    <th class="bg-gray-700 text-white p-2 px-4 border border-gray-600">Email</th>
+                    <th class="bg-gray-700 text-white p-2 px-4 border border-gray-600">Room Number</th>
+                    <th class="bg-gray-700 text-white p-2 px-4 border border-gray-600">Action</th>
                 </tr>
                 <?php
                 while ($row = mysqli_fetch_assoc($result)) {
                     echo "<tr>";
-                    echo "<td>{$row['id']}</td>";
-                    echo "<td>{$row['username']}</td>";
-                    echo "<td>{$row['password']}</td>";
-                    echo "<td>{$row['email']}</td>";
-                    echo "<td>{$row['roomnum']}</td>"; // New column to display 'roomnum'
-                    echo "<td>";
-                    echo "<form method='post'>";
+                    echo "<td class='border border-gray-300 rounded-bl-lg text-xs'>{$row['id']}</td>";
+                    echo "<td class='border border-gray-300 text-xs'>{$row['username']}</td>";
+                    echo "<td class='border border-gray-300 text-xs'>{$row['password']}</td>";
+                    echo "<td class='border border-gray-300 text-xs'>{$row['email']}</td>";
+                    echo "<td class='border border-gray-300 text-xs'>{$row['roomnum']}</td>"; // Adjust the key accordingly
+                    echo "<td class='border border-gray-300 rounded-br-lg text-xs'>";
+                    echo "<form method='post' class='flex flex-col gap-2 p-2 text-xs'>";
                     echo "<input type='hidden' name='edit_id' value='{$row['id']}'>";
                     echo "<label for='new_username'>New Username:</label>";
-                    echo "<input type='text' name='new_username' required>";
+                    echo "<input type='text' name='new_username' >";
                     echo "<label for='new_password'>New Password:</label>";
-                    echo "<input type='password' name='new_password' required>";
+                    echo "<input type='password' name='new_password' >";
                     echo "<label for='new_email'>New Email:</label>";
-                    echo "<input type='email' name='new_email' required>";
+                    echo "<input type='email' name='new_email' >";
                     echo "<label for='roomnum'>Room Number:</label>";
                     echo "<select name='roomnum'>";
                     // Dropdown options
@@ -204,4 +283,5 @@ if (isset($_POST['edit'])) {
         </div>
     </div>
 </body>
+
 </html>
