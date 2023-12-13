@@ -27,22 +27,36 @@ $stmt->fetch();
 $stmt->close();
 
 // Function to add a new tenant
-function addTenant($con, $username, $password, $email)
+function addTenant($con, $username, $password, $email, $school, $student_number)
 {
-    $stmt = $con->prepare('INSERT INTO tenants (username, password, email) VALUES (?, ?, ?)');
+    $stmt = $con->prepare('INSERT INTO tenants (username, password, email, studentid, school ) VALUES (?, ?, ?, ?, ?)');
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    $stmt->bind_param('sss', $username, $hashedPassword, $email);
+    $stmt->bind_param('sssss', $username, $hashedPassword, $email, $student_number, $school);
     $stmt->execute();
     $stmt->close();
 }
-
 // Function to archive a tenant (soft delete)
 function archiveTenant($con, $tenantId)
 {
-    $stmt = $con->prepare('UPDATE tenants SET archived = 1 WHERE id = ?');
-    $stmt->bind_param('i', $tenantId);
-    $stmt->execute();
-    $stmt->close();
+    // Fetch the tenant data
+    $stmtSelect = $con->prepare('SELECT * FROM tenants WHERE id = ?');
+    $stmtSelect->bind_param('i', $tenantId);
+    $stmtSelect->execute();
+    $result = $stmtSelect->get_result();
+    $tenantData = $result->fetch_assoc();
+    $stmtSelect->close();
+
+    // Insert the tenant data into the 'archived' table
+    $stmtInsert = $con->prepare('INSERT INTO archived (id, username, password, email, studentid, school, roomnum) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    $stmtInsert->bind_param('issssss', $tenantData['id'], $tenantData['username'], $tenantData['password'], $tenantData['email'], $tenantData['studentid'], $tenantData['school'], $tenantData['roomnum']);
+    $stmtInsert->execute();
+    $stmtInsert->close();
+
+    // Delete the record from the 'tenants' table
+    $stmtDelete = $con->prepare('DELETE FROM tenants WHERE id = ?');
+    $stmtDelete->bind_param('i', $tenantId);
+    $stmtDelete->execute();
+    $stmtDelete->close();
 }
 
 // Function to search for tenants by username
@@ -117,10 +131,10 @@ if (isset($_POST['add'])) {
     $username = $_POST['new_username'];
     $password = $_POST['new_password'];
     $email = $_POST['new_email'];
-    $studid = $_POST['new_studid'];
-    addTenant($con, $username, $password, $email, $studid);
+    $school = $_POST['new_school']; // Assuming your form has a field named 'new_school'
+    $student_number = $_POST['new_student_number']; // Assuming your form has a field named 'new_student_number'
+    addTenant($con, $username, $password, $email, $school, $student_number);
 }
-
 // Check if the form for archiving a tenant is submitted
 if (isset($_POST['archive'])) {
     $tenantIdToArchive = $_POST['archive_id'];
@@ -216,8 +230,7 @@ if (isset($_POST['edit'])) {
                 <label for="new_student_number" class="mt-1">Student Number: </label>
                 <input type="text" name="new_student_number" class="rounded-lg" required>
                 <button type="submit" name="add"
-                    class="bg-blue-700 rounded-full text-gray-100 hover:bg-blue-900 mt-4 py-2">Add
-                    Tenant</button>
+                    class="bg-blue-700 rounded-full text-gray-100 hover:bg-blue-900 mt-4 py-2">Add Tenant</button>
             </form>
             <div class="flex flex-col">
                 <form method="post" class="rounded-lg bg-gray-200 p-6 flex flex-col gap-2 h-full">
@@ -273,7 +286,7 @@ if (isset($_POST['edit'])) {
                         }
                     }
                     echo "</select>";
-                    echo "<button type='submit' name='edit'>Edit</button>";
+                    echo "<button class='bg-blue-700 rounded-full text-gray-100 hover:bg-blue-900 mt-4 py-2' type='submit' name='edit'>Edit</button>";
                     echo "</form>";
                     echo "</td>";
                     echo "</tr>";
