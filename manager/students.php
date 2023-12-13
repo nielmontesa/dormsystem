@@ -59,6 +59,9 @@ $stmt->close();
 					<li><a href="students.php"
 							class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
 								class="fa-solid fa-people-roof"></i>Students</a></li>
+					<li><a href="guests.php"
+							class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-people-pulling"></i></i>Guests</a></li>
 				</ul>
 			</div>
 			<div class="flex flex-col gap-2">
