@@ -43,12 +43,14 @@ if ($stmt = $con->prepare('SELECT id FROM guests WHERE guest_name = ?')) {
         // Username already exists
         echo 'Username exists, please choose another!';
     } else {
+
         // Username doesn't exist, insert new account
         if ($stmt = $con->prepare('INSERT INTO guests (id, guest_name, email, contact_number, checkin_time) VALUES (NULL, ?, ?, ?, ?)')) {
             $stmt->bind_param('ssss', $_POST['username'], $_POST['email'], $_POST['time'], $_POST['contactnumber']);
             $stmt->execute();
 
-            header('Location: ../home.php');
+            echo '<script>alert("Guest successfully added"); window.location.href = "register.html";</script>';
+
         } else {
             // Something is wrong with the SQL statement, so you must check to make sure your guests table exists with all three fields.
             echo 'Could not prepare statement!';

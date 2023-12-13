@@ -1,47 +1,72 @@
 <html>
   <head>
+    <script src="https://cdn.tailwindcss.com"></script>
     <meta charset="utf-8" />
     <title>Login</title>
-    <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+		integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+		crossorigin="anonymous" referrerpolicy="no-referrer">
   </head>
-  <body>
+  <body class="loggedin p-12 flex gap-12">
+	<nav class="navtop bg-gray-900 text-white p-12 rounded-lg ">
+		<div class="flex flex-col gap-5 justify-between	h-full">
+			<div>
+				<p class="capitalize">
+					<?= $_SESSION['name'] ?>
+				</p>
+				<p class="text-sm text-gray-300">Tenant</p>
+			</div>
+			<div class="h-full mt-12">
+				<ul class="flex flex-col gap-5">
+					<li><a href="../home.php"
+							class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-person"></i>Profile</a></li>
+					<li><a href="guests/register.html"
+							class="text-gray-100 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-people-pulling fa-sm"></i>Add Guest</a></li>
+				</ul>
+			</div>
+			<div class="flex flex-col gap-2">
+				<ul>
+					<li><a href="logout.php"
+							class="text-gray-300 hover:text-blue-200 flex items-center justify-start gap-2"><i
+								class="fa-solid fa-right-from-bracket"></i></i>Logout</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
     <div class="register">
-      <h1>Register</h1>
+      <p class="text-5xl mb-4">You can add a guest here.
+		</p>
+    <p class="text-gray-600 mb-5">Please enter the guest details.</p>
       <form
         id="registrationForm"
         action="register.php"
         method="post"
-        autocomplete="off">
-        <label for="regUsername">
-          <i class="fas fa-user"></i>
-        </label>
+        autocomplete="off" class="bg-gray-100 p-6 rounded-lg flex items-center justify-center flex-col text-center gap-2">
         <input
           type="text"
           name="username"
           placeholder="Full Name"
           id="regUsername"
-          required />
-        <label for="regEmail">
-          <i class="fas fa-envelope"></i>
+          required class="bg-white px-6 py-2 bg-gray-100 rounded-full border-gray-300 border-[1px]" />
         </label>
         <input
           type="email"
           name="email"
           placeholder="Email"
           id="regEmail"
-          required />
-        <label for="time">Number: </label>
+          required class="bg-white px-6 py-2 bg-gray-100 rounded-full border-gray-300 border-[1px]" />
         <input
           type="tel"
           name="time"
           placeholder="Contact Number"
           id="regEmail"
-          required />
+          required class="bg-white px-6 py-2 bg-gray-100 rounded-full border-gray-300 border-[1px]" />
+          <div></div>
         <label for="time">Check-in Time: </label>
-        <input type="time" name="contactnumber" id="regEmail" required />
-        <input type="submit" value="Register" />
+        <input type="time" name="contactnumber" id="regEmail" required placeholder="Check-In Time" />
+        <input type="submit" value="Register" class="px-6 py-2 bg-blue-700 rounded-full text-gray-100 hover:bg-blue-900"/>
       </form>
     </div>
   </body>
