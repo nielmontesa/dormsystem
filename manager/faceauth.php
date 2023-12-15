@@ -70,7 +70,7 @@ if (isset($_POST['start_over'])) {
   <script src="https://cdn.faceio.net/fio.js"></script>
   <script type="text/javascript">
     // Instantiate fio.js with your application Public ID
-    const faceio = new faceIO("fioa4ada");
+    const faceio = new faceIO("fioa0bc4");
     function enrollNewUser() {
       // Start the facial enrollment process
       faceio.enroll({
